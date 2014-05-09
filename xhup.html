@@ -1,0 +1,144 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>小鹤双拼查询</title>
+	<script src="./jquery.min.js"></script>
+	<script src="./data/ch2code.js"></script>
+	<script src="./data/code2ch.js"></script>
+	<script>
+	$(document).ready(function(){
+		var input, ch, code;
+		var txt_char = $("#char");
+		var txt_code = $("#code");
+
+		var getChars = function(code) {
+			var temp = code2ch; 
+			for (var i = 0; i < code.length; ++i) {
+				temp = temp[code[i]];
+				if (typeof temp === 'undefined') {
+					break;
+				}
+			}
+			if (typeof temp !== 'undefined') {
+				return temp["value"];
+			} else {
+				return null;
+			}
+		}
+
+		var makeCard = function(code, ch, grayCode) {
+			var chs = getChars(code);
+			if (chs === null) {
+				return null;
+			}
+			
+			var card = "";
+			for (var i = 0; i < chs.length; ++i) {
+				if (typeof ch !== undefined && ch !== null && chs[i].indexOf(ch) < 0) {
+					continue;
+				}
+
+				if (typeof grayCode === undefined || grayCode === true) {
+					card += "<div class='card'><span class='code gray'>" + code + "</span><span>" + 
+									chs[i] + "</span></div>";
+				} else {
+					card += "<div class='card'><span class='code'>" + code + "</span><span class='gray'>" + 
+									chs[i] + "</span></div>";
+				}
+			}
+			return card;
+		}
+		
+		
+		var makeCodeCard = function(ch) {
+			var codes = ch2code[ch];
+			if (typeof codes === 'undefined') {
+				return null;
+			}
+			
+			var card = "", ret;
+			for (var i = 0; i < codes.length; ++i) {
+				ret = makeCard(codes[i], ch);
+				if (ret !== null) {
+					card += ret;
+				}
+			}
+			return card;
+		}
+		
+		$("#in").bind("keyup", function(){
+			input = $("#in").val();
+			if (input === "") {
+				txt_char.hide();
+				txt_code.hide();
+				return;
+			} else {
+				txt_char.show();
+				txt_code.show();
+			}
+			
+			temp = makeCard(input, null, true);
+			if (temp === null || temp === "") {
+				txt_char.hide();
+			} else {
+				txt_char.html(temp);
+			}
+
+			temp = makeCodeCard(input);
+			if (temp === null || temp === "") {
+				txt_code.hide();
+			} else {
+				txt_code.html(temp);
+			}
+		});
+	});
+	</script>
+	
+	<style>
+		input[type="text"] {
+			width: 100%; 
+			box-sizing: border-box;
+			-webkit-box-sizing:border-box;
+			-moz-box-sizing: border-box;
+			padding: 0px 5px;
+		}
+		
+		.card {
+			margin: 0px 5px;
+			border-bottom: #eee 1px solid;
+		}
+		
+		.gray {
+			color: #aaa;
+		}
+		
+		.code {
+			width: 100px;
+			margin: 0px 10px;
+			display:block;
+			float:left;
+		}
+		
+		div, input {
+			font-family: "Microsoft YaHei", "Apple LiGothic Medium";
+			font-size: 1.5em;
+		}
+		
+		#code, #char {
+			display: none;
+			margin: 10px auto 10px;
+			padding: 5px;
+			background-color: white;
+			-moz-box-shadow:0 0 10px orange ;
+			-webkit-box-shadow:0 0 10px orange;
+			box-shadow:0 0 10px orange;
+		}
+	</style>
+</head>
+<body>
+	<input type="text" id="in"/>
+	<div id="code"></div>
+	<div id="char"></div>
+</body>
+</html>
