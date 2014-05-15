@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import os
 bdxh = open("bdxh.txt")
 
 mb = {}
@@ -11,14 +12,21 @@ bdxh.readline()
 line = bdxh.readline()
 code = ''
 ch = ''
+order = 1
 cont = ''
 
 while line:
     # read a line and remove the leading number and the line-break at the end.
     line = bdxh.readline().rstrip('\n\r')
     if ',' in line:
-        cont = line.split(',')[1]
+        (order, cont) = line.split(',')[:2]
     else:
+        continue
+
+    # convert order to number
+    try:
+        order = int(order)
+    except ValueError:
         continue
 
     # get the code and character
@@ -27,7 +35,9 @@ while line:
     else:
         continue
 
-    mb[code] = ch
+    if mb.get(code, False) is False:
+        mb[code] = {}
+    mb[code][order] = ch
 
 output = open('flypy.txt', 'w')
 output.write(''';fcitx Version 0x03 Table file
@@ -45,8 +55,11 @@ a4=p11+p21+p31+n11
 ''')
 
 for code in sorted(mb):
-    output.write('%s %s\n'%(code, mb[code]))
+    for order in sorted(mb[code]):
+        output.write('%s %s\n'%(code, mb[code][order]))
 
 # close file
 bdxh.close()
 output.close()
+
+os.system("txt2mb flypy.txt flypy.mb")
