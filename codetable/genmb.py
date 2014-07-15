@@ -1,4 +1,5 @@
-# -*- coding:utf-8 -*-
+#!/usr/bin/env python
+# encoding: utf-8
 import os
 bdxh = open("bdxh.txt")
 
@@ -39,9 +40,10 @@ while line:
         mb[code] = {}
     mb[code][order] = ch
 
-output = open('flypy.txt', 'w')
-output.write(''';fcitx Version 0x03 Table file
-KeyCode=abcdefghijklmnopqrstuvwxyz;',./
+# gen mb file for table ime
+out_mb = open('flypy.txt', 'w')
+out_mb.write(''';fcitx Version 0x03 Table file
+KeyCode=abcdefghijklmnopqrstuvwxyz;'/
 Length=4
 Pinyin=@
 PinyinLength=4
@@ -54,12 +56,17 @@ a4=p11+p21+p31+n11
 [Data]
 ''')
 
+# gen pysym for pinyin input
+out_pySym = open('pySym.mb', 'w')
+
 for code in sorted(mb):
     for order in sorted(mb[code]):
-        output.write('%s %s\n'%(code, mb[code][order]))
+        out_mb.write('%s %s\n'%(code, mb[code][order]))
+        out_pySym.write('%s %s\n'%(code, mb[code][order]))
 
 # close file
 bdxh.close()
-output.close()
+out_mb.close()
+out_pySym.close()
 
 os.system("txt2mb flypy.txt flypy.mb")
